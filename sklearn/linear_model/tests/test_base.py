@@ -96,6 +96,30 @@ def test_linear_regression_sample_weights():
                 assert_almost_equal(inter1, coefs2[0])
 
 
+def test_linear_regression_shapes():
+    # Test shape of coef_ and intercept_
+    rng = np.random.RandomState(0)
+    n_samples, n_features = 5, 10
+    X = rng.randn(n_samples, n_features)
+    y = rng.randn(n_samples)
+    Y1 = y[:, np.newaxis]
+    Y = np.c_[y, 1 + y]
+
+    clf = LinearRegression()
+
+    clf.fit(X, y)
+    assert clf.coef_.shape == (n_features,)
+    assert clf.intercept_.shape == ()
+
+    clf.fit(X, Y1)
+    assert clf.coef_.shape == (1, n_features)
+    assert clf.intercept_.shape == (1,)
+
+    clf.fit(X, Y)
+    assert clf.coef_.shape == (2, n_features)
+    assert clf.intercept_.shape == (2,)
+
+
 def test_raises_value_error_if_positive_and_sparse():
     error_msg = "A sparse matrix was passed, but dense data is required."
     # X must not be sparse if positive == True
