@@ -205,6 +205,32 @@ def test_lasso_toy():
     assert_almost_equal(clf.dual_gap_, 0)
 
 
+def test_lasso_shapes():
+    # Test Lasso to ensure that the shape of the coefficients and the intercept
+    # reflect the shapes from LinearRegression and Ridge.
+
+    rng = np.random.RandomState(0)
+    n_samples, n_features = 5, 10
+    X = rng.randn(n_samples, n_features)
+    y = rng.randn(n_samples)
+    Y1 = y[:, np.newaxis]
+    Y = np.c_[y, 1 + y]
+
+    clf = Lasso()
+
+    clf.fit(X, y)
+    assert clf.coef_.shape == (n_features,)
+    assert clf.intercept_.shape == ()
+
+    clf.fit(X, Y1)
+    assert clf.coef_.shape == (1, n_features)
+    assert clf.intercept_.shape == (1,)
+
+    clf.fit(X, Y)
+    assert clf.coef_.shape == (2, n_features)
+    assert clf.intercept_.shape == (2,)
+
+
 def test_enet_toy():
     # Test ElasticNet for various parameters of alpha and l1_ratio.
     # Actually, the parameters alpha = 0 should not be allowed. However,

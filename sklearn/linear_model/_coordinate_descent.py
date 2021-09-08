@@ -1009,8 +1009,10 @@ class ElasticNet(MultiOutputMixin, RegressorMixin, LinearModel):
         # called _rescale_data
         if check_input or sample_weight is not None:
             X, y = _set_order(X, y, order="F")
+        ravel = False
         if y.ndim == 1:
             y = y[:, np.newaxis]
+            ravel = True
         if Xy is not None and Xy.ndim == 1:
             Xy = Xy[:, np.newaxis]
 
@@ -1060,10 +1062,10 @@ class ElasticNet(MultiOutputMixin, RegressorMixin, LinearModel):
             dual_gaps_[k] = this_dual_gap[0]
             self.n_iter_.append(this_iter[0])
 
-        if n_targets == 1:
+        if ravel:
             self.n_iter_ = self.n_iter_[0]
-            self.coef_ = coef_[0]
-            self.dual_gap_ = dual_gaps_[0]
+            self.coef_ = coef_.ravel()
+            self.dual_gap_ = dual_gaps_.ravel()
         else:
             self.coef_ = coef_
             self.dual_gap_ = dual_gaps_
